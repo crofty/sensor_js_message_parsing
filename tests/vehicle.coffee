@@ -88,3 +88,10 @@ test 'bindings to a journey are not lost when a new journey is created', ->
   boundObject.set('foo', false)
   SC.run.sync()
   equal journey1.get('foo'), false, "the binding still works"
+
+test 'moved', ->
+  vehicle =  Sensor.Vehicle.create()
+  equal vehicle.get('moved'), false
+  vehicle.get('journeys').pushObject(Sensor.Journey.create())
+  SC.run.sync()
+  equal vehicle.get('moved'), true

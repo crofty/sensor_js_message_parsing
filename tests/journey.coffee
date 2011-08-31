@@ -38,3 +38,5 @@ test "end address is given by the last message", ->
   journey.addMessage({address: 'Manchester'})
   SC.run.sync()
   equal journey.get('endAddress'), 'Manchester'
+
+

@@ -35,6 +35,9 @@ Sensor.Vehicle = SC.Object.extend
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
   headingBinding: '.lastMessage.heading'
+  moved: ( ->
+    !!@getPath('journeys.length')
+  ).property()
   createJourney: (message) ->
     if lastJourney = @getPath('unfilteredJourneys.lastObject')
       lastJourney.finish()
