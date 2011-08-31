@@ -24,6 +24,7 @@ Sensor.Vehicle = SC.Object.extend
             journey.addMessage(previousStagedMessage)
         @staged = message
       journey.addMessage(message) if journey
+    # invalidate the journey cache
   journeys: ( ->
     console.log "Calculating Journeys"
     content = _.reject @getPath('unfilteredJourneys.content'), (journey) ->

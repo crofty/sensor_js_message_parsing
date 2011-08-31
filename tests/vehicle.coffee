@@ -38,6 +38,13 @@ test 'heading is set by the last message', ->
   SC.run.sync()
   equal vehicle.getPath('heading'), 90
 
+test 'journeys are not incorrectly cached', ->
+  vehicle =  Sensor.Vehicle.create()
+  equal vehicle.getPath('journeys.length'), 0, "has zero journeys before any messages"
+  vehicle.updateWithMessages { usn: Sensor.IGNITION_ON, datetime: "2011-08-27T01:10:11Z"}
+  SC.run.sync()
+  equal vehicle.getPath('journeys.length'), 1, "it hasn't cached zero journeys"
+
 test 'bindings to a journey are not lost when a new journey is created', ->
   vehicle =  Sensor.Vehicle.create()
   messages = [
