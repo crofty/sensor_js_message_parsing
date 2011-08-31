@@ -1,6 +1,6 @@
 Sensor.Vehicle = SC.Object.extend
   init: ->
-    @set('unfilteredJourneys', Sensor.Journeys.create(content: []))
+    @set('journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
   updateWithMessages: (dataArray) ->
     dataArray = [dataArray] if !$.isArray(dataArray)
@@ -10,39 +10,30 @@ Sensor.Vehicle = SC.Object.extend
       if message.get('usn') == Sensor.IGNITION_ON
         journey = @createJourney(message)
       if message.get('usn') == Sensor.IGNITION_OFF
-        journey = @getPath('unfilteredJourneys.lastObject')
+        journey = @getPath('journeys.lastObject')
         if journey
           journey.finish()
           if journey.getPath('lastMessage.usn') == Sensor.IGNITION_ON
             @get('journeys').removeObject(journey)
             journey.destroy()
       if message.get('usn') == Sensor.MOVING
-        if journey = @getPath('unfilteredJourneys.lastObject')
+        if journey = @getPath('journeys.lastObject')
         else
           if previousStagedMessage = @stagedMessage(message.get('datetime'))
             journey = @createJourney(previousStagedMessage)
             journey.addMessage(previousStagedMessage)
         @staged = message
       journey.addMessage(message) if journey
-    @notifyPropertyChange('journeys')
-  journeys: ( ->
-    console.log "Calculating Journeys"
-    content = _.reject @getPath('unfilteredJourneys.content'), (journey) ->
-      journey.get('state') == 'finished' && !journey.get('moved') == true
-    SC.ArrayProxy.create(content: content)
-  ).property().cacheable()
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
   headingBinding: '.lastMessage.heading'
-  moved: ( ->
-    !!@getPath('journeys.length')
-  ).property()
+  movedBinding: SC.Binding.oneWay().bool().from('journeys')
   createJourney: (message) ->
-    if lastJourney = @getPath('unfilteredJourneys.lastObject')
+    if lastJourney = @getPath('journeys.lastObject')
       lastJourney.finish()
     journey = Sensor.Journey.create(vehicle: this)
-    @get('unfilteredJourneys').pushObject(journey)
+    @get('journeys').pushObject(journey)
     journey
   state: ( ->
     lastMessage = @getPath('messages.lastObject')
