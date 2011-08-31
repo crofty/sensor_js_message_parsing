@@ -1,4 +1,4 @@
-require('sproutcore-runtime')
+require('sproutcore')
 require('sproutcore-datetime')
 Sensor ?= SC.Application.create()
 Sensor.IGNITION_ON = 64

@@ -1,0 +1,20 @@
+{
+  "name": "sproutcore-handlebars-format",
+  "version": "2.0.beta.3",
+  "description": "Adds format support for handlebars templates",
+  "homepage": "http://www.sproutcore.com",
+  "author": "Charles Jolley",
+  
+  "bpm:build": {
+    "bpm_libs.js": {
+      "directories": []
+    }
+  },
+  
+  "bpm:provides": {
+    "format": {
+      "mime:default": "application/javascript",
+      "main": "sproutcore-handlebars-format/format"
+    }
+  }
+}
