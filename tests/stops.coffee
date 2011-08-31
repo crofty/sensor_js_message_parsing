@@ -1,8 +1,9 @@
 vehicle = null
-
 module "Vehicle Stops",
   setup: ->
     vehicle = Sensor.Vehicle.create()
+  teardown: ->
+    vehicle = null
 
 atTime = (time,func) ->
   console.log "changing time to ", time
@@ -69,18 +70,3 @@ test "one stop when the second journey is underway", ->
     equals stop1.get('address'), 'London'
     equals stop1.get('leaveTime').toFormattedString('%H:%M'), '01:22'
 
-# test 'Sing', ->
-#   message =
-#     usn: Sensor.IGNITION_ON
-#     datetime: '2011-08-27T05:37:11Z'
-#     address: 'London'
-#   vehicle.updateWithMessages message
-#   atTime "2011-08-27T05:40:00Z", ->
-#     SC.run.sync()
-#     journey1 = vehicle.getPath('journeys.firstObject')
-#     equals journey1.get('startTime').toFormattedString('%H:%M'), '05:37'
-#     equals journey1.get('startAddress'), 'London'
-#     equals journey1.get('endTime').toFormattedString('%H:%M'), '05:37'
-#     equals journey1.get('endAddress'), 'London'
-#     equals journey1.get('state'), 'unfinished'
-#     equals vehicle.get('state'), 'moving'

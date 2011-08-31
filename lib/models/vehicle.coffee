@@ -24,13 +24,13 @@ Sensor.Vehicle = SC.Object.extend
             journey.addMessage(previousStagedMessage)
         @staged = message
       journey.addMessage(message) if journey
-    # invalidate the journey cache
+    @notifyPropertyChange('journeys')
   journeys: ( ->
     console.log "Calculating Journeys"
     content = _.reject @getPath('unfilteredJourneys.content'), (journey) ->
       journey.get('state') == 'finished' && !journey.get('moved') == true
     SC.ArrayProxy.create(content: content)
-  ).property('unfilteredJourneys.length').cacheable()
+  ).property().cacheable()
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
