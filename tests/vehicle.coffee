@@ -91,7 +91,7 @@ test 'bindings to a journey are not lost when a new journey is created', ->
 
 test 'moved', ->
   vehicle =  Sensor.Vehicle.create()
-  notEqual vehicle.get('moved'), true
+  equal vehicle.get('moved'), false
   vehicle.get('journeys').pushObject(Sensor.Journey.create())
   SC.run.sync()
   equal vehicle.get('moved'), true
