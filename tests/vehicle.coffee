@@ -5,7 +5,7 @@ module "Vehicle",
 
 atTime = (time,func) ->
   console.log "changing time to ", time
-  date = SC.DateTime.parse(time,'%Y-%m-%dT%H:%M:%SZ')
+  date = SC.DateTime.parse(time,'%Y-%m-%dT%H:%M:%S%Z')
   this.clock = sinon.useFakeTimers(date.get('milliseconds'),"Date")
   func()
   this.clock.restore()
@@ -21,27 +21,21 @@ test 'can be initialized with data', ->
 
 test 'longitude is set by the last message', ->
   vehicle =  Sensor.Vehicle.create()
-  message = {
-    lon: 51
-  }
+  message = Sensor.Message.create lon: 51
   vehicle.updateWithMessages message
   SC.run.sync()
   equal vehicle.get('lon'), 51
 
 test 'latitude is set by the last message', ->
   vehicle =  Sensor.Vehicle.create()
-  message = {
-    lat: -2
-  }
+  message = Sensor.Message.create lat: -2
   vehicle.updateWithMessages message
   SC.run.sync()
   equal vehicle.getPath('lat'), -2
 
 test 'heading is set by the last message', ->
   vehicle =  Sensor.Vehicle.create()
-  message = {
-    heading: 90
-  }
+  message = Sensor.Message.create heading: 90
   vehicle.updateWithMessages message
   SC.run.sync()
   equal vehicle.getPath('heading'), 90
@@ -49,10 +43,10 @@ test 'heading is set by the last message', ->
 test 'journeys are not incorrectly cached', ->
   vehicle =  Sensor.Vehicle.create()
   equal vehicle.getPath('journeys.length'), 0, "zero journeys before any messages received"
-  messages = [
+  messages = messageFactory [
    {usn: Sensor.IGNITION_ON,  time: '01:10'},
    {usn: Sensor.MOVING,       time: '01:11'},
-  ].map (message) -> { usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  ]
   vehicle.updateWithMessages messages
   atTime '2011-08-27T09:00:00Z', ->
     SC.run.sync()
@@ -60,11 +54,11 @@ test 'journeys are not incorrectly cached', ->
 
 test 'bindings to a journey are not lost when a new journey is created', ->
   vehicle =  Sensor.Vehicle.create()
-  messages = [
+  messages = messageFactory [
    {usn: Sensor.IGNITION_ON,  time: '01:10'},
    {usn: Sensor.MOVING,       time: '01:11'},
    {usn: Sensor.IGNITION_OFF, time: '01:12'}
-  ].map (message) -> { usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  ]
   vehicle.updateWithMessages messages
   SC.run.sync()
   Sensor.journey1 = vehicle.getPath('journeys.firstObject')
@@ -75,11 +69,11 @@ test 'bindings to a journey are not lost when a new journey is created', ->
   SC.run.sync()
   equal Sensor.journey1.get('foo'), true, "the binding should have changed journey1#foo"
   # Create a new journey
-  messages = [
+  messages = messageFactory [
    {usn: Sensor.IGNITION_ON,  time: '02:10'},
    {usn: Sensor.MOVING,       time: '02:11'},
    {usn: Sensor.IGNITION_OFF, time: '02:12'}
-  ].map (message) -> { usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  ]
   vehicle.updateWithMessages messages
   SC.run.sync()
   # Check that the binding is still in place

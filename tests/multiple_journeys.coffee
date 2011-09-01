@@ -5,22 +5,15 @@ module "Multiple Journeys",
     vehicle = Sensor.Vehicle.create()
   teardown: -> console.log "teardown"
 
-atTime = (time,func) ->
-  console.log "changing time to ", time
-  date = SC.DateTime.parse(time,'%Y-%m-%dT%H:%M:%SZ')
-  this.clock = sinon.useFakeTimers(date.get('milliseconds'),"Date")
-  func()
-  this.clock.restore()
-  console.log "time restored to ", new Date()
-
 test 'Multiple Journeys', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '01:10'},
-   {usn: Sensor.MOVING,       time: '01:11'},
-   {usn: Sensor.IGNITION_OFF, time: '01:12'},
-   {usn: Sensor.IGNITION_ON,  time: '01:20'},
-   {usn: Sensor.MOVING,       time: '01:21'},
-   {usn: Sensor.IGNITION_OFF, time: '01:22'}
-  ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.IGNITION_OFF, time: '01:12'},
+    {usn: Sensor.IGNITION_ON,  time: '01:20'},
+    {usn: Sensor.MOVING,       time: '01:21'},
+    {usn: Sensor.IGNITION_OFF, time: '01:22'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime "2011-08-27T05:40:00Z", ->
@@ -34,13 +27,14 @@ test 'Multiple Journeys', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Multiple Journeys with stopped time', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '01:10'},
-   {usn: Sensor.MOVING,       time: '01:11'},
-   {usn: Sensor.IGNITION_OFF, time: '01:12'},
-   {usn: Sensor.IGNITION_ON,  time: '01:20'},
-   {usn: Sensor.MOVING,       time: '01:21'},
-   {usn: Sensor.IGNITION_OFF, time: '01:22'}
-  ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.IGNITION_OFF, time: '01:12'},
+    {usn: Sensor.IGNITION_ON,  time: '01:20'},
+    {usn: Sensor.MOVING,       time: '01:21'},
+    {usn: Sensor.IGNITION_OFF, time: '01:22'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime "2011-08-27T05:40:00Z", ->
@@ -57,14 +51,15 @@ test 'Multiple Journeys with stopped time', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Multiple Journeys when the first has no ignition off', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '01:10'},
-   {usn: Sensor.MOVING,       time: '01:11'},
-   {usn: Sensor.MOVING,       time: '01:12'},
-   {usn: Sensor.MOVING,       time: '01:13'},
-   {usn: Sensor.IGNITION_ON,  time: '01:15'},
-   {usn: Sensor.MOVING,       time: '01:16'},
-   {usn: Sensor.IGNITION_OFF, time: '01:17'}
-  ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.MOVING,       time: '01:12'},
+    {usn: Sensor.MOVING,       time: '01:13'},
+    {usn: Sensor.IGNITION_ON,  time: '01:15'},
+    {usn: Sensor.MOVING,       time: '01:16'},
+    {usn: Sensor.IGNITION_OFF, time: '01:17'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime "2011-08-27T01:18:00Z", ->
@@ -81,13 +76,16 @@ test 'Multiple Journeys when the first has no ignition off', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Journeys on different days', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '2011-08-27T01:10:00Z'},
-   {usn: Sensor.MOVING,       time: '2011-08-27T01:11:00Z'},
-   {usn: Sensor.IGNITION_OFF, time: '2011-08-27T01:12:00Z'},
-   {usn: Sensor.IGNITION_ON,  time: '2011-09-27T01:01:00Z'},
-   {usn: Sensor.MOVING,       time: '2011-09-27T01:02:00Z'},
-   {usn: Sensor.IGNITION_OFF, time: '2011-09-27T01:03:00Z'}
-  ].map (message) -> { usn: message.usn, datetime: message.time}
+  messages = [{usn: Sensor.IGNITION_ON,  time: '2011-08-27T01:10'},
+   {usn: Sensor.MOVING,       time: '2011-08-27T01:11'},
+   {usn: Sensor.IGNITION_OFF, time: '2011-08-27T01:12'},
+   {usn: Sensor.IGNITION_ON,  time: '2011-09-27T01:01'},
+   {usn: Sensor.MOVING,       time: '2011-09-27T01:02'},
+   {usn: Sensor.IGNITION_OFF, time: '2011-09-27T01:03'}
+  ].map (message) ->
+    Sensor.Message.create
+      usn: message.usn
+      datetime: SC.DateTime.parse(message.time,'%Y-%m-%dT%H:%M')
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime "2011-08-27T01:18:00Z", ->

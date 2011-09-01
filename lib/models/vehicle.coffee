@@ -2,10 +2,9 @@ Sensor.Vehicle = SC.Object.extend
   init: ->
     @set('journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
-  updateWithMessages: (dataArray) ->
-    dataArray = [dataArray] if !$.isArray(dataArray)
-    dataArray.forEach (data) =>
-      message       = Sensor.Message.create(data)
+  updateWithMessages: (messages) ->
+    messages = [messages] if !$.isArray(messages)
+    messages.forEach (message) =>
       @get('messages').pushObject(message)
       if message.get('usn') == Sensor.IGNITION_ON
         journey = @createJourney(message)

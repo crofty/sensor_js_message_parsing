@@ -1,3 +1,6 @@
 Sensor.Message = SC.Object.extend
   init: ->
-    @set('datetime', SC.DateTime.parse(@get('datetime'),'%Y-%m-%dT%H:%M:%SZ'))
+    datetime = @get('datetime')
+    if typeof(datetime) == "string"
+      datetimeInCurrentTimezone = SC.DateTime.parse(datetime,'%Y-%m-%dT%H:%M:%S%Z').adjust(timezone: (new Date()).getTimezoneOffset())
+      @set('datetime', datetimeInCurrentTimezone)

@@ -4,18 +4,10 @@ module "Single Journey",
   setup: ->
     vehicle = Sensor.Vehicle.create()
 
-atTime = (time,func) ->
-  console.log "changing time to ", time
-  date = SC.DateTime.parse(time,'%Y-%m-%dT%H:%M:%SZ')
-  this.clock = sinon.useFakeTimers(date.get('milliseconds'),"Date")
-  func()
-  this.clock.restore()
-  console.log "time restored to ", new Date()
-
 test 'Ignition On', ->
-  message =
+  message = Sensor.Message.create
     usn: Sensor.IGNITION_ON
-    datetime: '2011-08-27T05:37:11Z'
+    datetime: SC.DateTime.parse('2011-08-27T05:37:11Z','%Y-%m-%dT%H:%M')
     address: 'London'
   vehicle.updateWithMessages message
   atTime "2011-08-27T05:40:00Z", ->
@@ -29,9 +21,9 @@ test 'Ignition On', ->
     equals vehicle.get('state'), 'moving'
 
 test 'Ignition Off', ->
-  message =
+  message = Sensor.Message.create
     usn: Sensor.IGNITION_OFF
-    datetime: '2011-08-27T01:10:11Z'
+    datetime: SC.DateTime.parse('2011-08-27T01:10:11Z','%Y-%m-%dT%H:%M')
     address: 'London'
   vehicle.updateWithMessages message
   SC.run.sync()
@@ -39,9 +31,10 @@ test 'Ignition Off', ->
   equals vehicle.get('state'), 'stopped'
 
 test 'Recent unfinished journey', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
+  messages = messageFactory [
+   {usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
    {usn: Sensor.MOVING,       time: '01:11', address: 'Manchester'}
-  ].map (message) -> { usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z", address: message.address}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
 
@@ -55,10 +48,11 @@ test 'Recent unfinished journey', ->
     equals vehicle.get('state'), 'moving'
 
 test 'Finished journey', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
-   {usn: Sensor.MOVING,       time: '01:11', address: 'Birmingham'},
-   {usn: Sensor.IGNITION_OFF, time: '01:12', address: 'Manchester'}
-  ].map (message) -> { usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z", address: message.address}
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
+    {usn: Sensor.MOVING,       time: '01:11', address: 'Birmingham'},
+    {usn: Sensor.IGNITION_OFF, time: '01:12', address: 'Manchester'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime '2011-08-27T01:13:00Z', ->
@@ -72,9 +66,10 @@ test 'Finished journey', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Long ago finished journey with no ignition off', ->
-  messages = [{usn: Sensor.IGNITION_ON,  time: '2011-08-27T01:10:00Z'},
-   {usn: Sensor.MOVING,       time: '2011-08-27T01:11:00Z'}
-  ].map (message) -> { usn: message.usn, datetime: message.time}
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime "2011-08-27T09:00:00Z", ->
@@ -85,11 +80,12 @@ test 'Long ago finished journey with no ignition off', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Journey with no ignition on', ->
-  messages = [{usn: Sensor.MOVING,  time: '01:10'},
-   {usn: Sensor.MOVING,       time: '01:11'},
-   {usn: Sensor.MOVING,       time: '01:12'},
-   {usn: Sensor.IGNITION_OFF, time: '01:13'}
-  ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  messages = messageFactory [
+    {usn: Sensor.MOVING,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.MOVING,       time: '01:12'},
+    {usn: Sensor.IGNITION_OFF, time: '01:13'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   journey1 = vehicle.getPath('journeys.firstObject')
@@ -99,10 +95,11 @@ test 'Journey with no ignition on', ->
   equals vehicle.get('state'), 'stopped'
 
 test 'Journey with no ignition on or off', ->
-  messages = [{usn: Sensor.MOVING,  time: '01:10'},
-   {usn: Sensor.MOVING,       time: '01:11'},
-   {usn: Sensor.MOVING,       time: '01:12'}
-  ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
+  messages = messageFactory [
+    {usn: Sensor.MOVING,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.MOVING,       time: '01:12'}
+  ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
   atTime '2011-08-27T09:00:00Z', ->
@@ -122,11 +119,10 @@ test 'Journey with no ignition on or off', ->
 #     equal vehicle.getPath('journeys.length'), 0
 
 test 'Random moving GPS blips', ->
-  vehicle.updateWithMessages(
+  messages = messageFactory
     usn: Sensor.MOVING
-    datetime: '2011-08-27T01:10:00Z'
-    address: 'London'
-  )
+    datetime: '01:10'
+  vehicle.updateWithMessages messages
   atTime '2011-08-27T09:00:00Z', ->
     SC.run.sync()
     equal vehicle.getPath('journeys.length'), 0
