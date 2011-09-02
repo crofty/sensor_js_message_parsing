@@ -54,7 +54,6 @@ Sensor.Vehicle = SC.Object.extend
     @get('journeys').pushObject(journey)
     journey
   createStop: (message) ->
-    console.log "createing stop", message.get('usn')
     stop = Sensor.Stop.create arriveMessage: message
     @get('_stops').pushObject stop
     stop
