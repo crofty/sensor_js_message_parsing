@@ -27,15 +27,6 @@ Sensor.Vehicle = SC.Object.extend
         @staged = message
     ), this)
   stops: ( ->
-    # Need to account for the fact that a journey may not have
-    # had an ignition off and hence become 'stopped' due to 
-    # timing out.  If this has happened then we will be one stop
-    # short and we need to create the last stop
-    # _stops = @get('_stops')
-    # if lastJourney = @getPath('_journeys.lastObject')
-    #   if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
-    #     @createStop(lastJourney.getPath('messages.lastObject'))
-    # _stops
     console.log "calculating stops"
     journeys = @getPath('journeys.content').slice(0)
     if journeys
@@ -65,13 +56,8 @@ Sensor.Vehicle = SC.Object.extend
     journey.get('messages').pushObject(message)
     @get('_journeys').pushObject(journey)
     journey
-  createStop: (message) ->
-    stop = Sensor.Stop.create arriveMessage: message
-    @get('_stops').pushObject stop
-    stop
   finishJourney: (journey) ->
     journey.finish()
-    @createStop(journey.getPath('messages.lastObject'))
   state: SC.computed( ->
     console.log "calculating state"
     lastMessage = @getPath('messages.lastObject')
