@@ -101,6 +101,38 @@ test 'bindings to a journey are not lost when a new journey is created', ->
   SC.run.sync()
   equal journey1.get('foo'), false, "the binding still works"
 
+test 'bindings to a stop are not lost when a new stop is created', ->
+  vehicle =  Sensor.Vehicle.create()
+  messages = messageFactory [
+   {usn: Sensor.IGNITION_ON,  time: '01:10'},
+   {usn: Sensor.MOVING,       time: '01:11'},
+   {usn: Sensor.IGNITION_OFF, time: '01:12'}
+  ]
+  vehicle.updateWithMessages messages
+  SC.run.sync()
+  Sensor.stop1 = vehicle.getPath('stops.firstObject')
+  boundObject = SC.Object.create fooBinding: 'Sensor.stop1.foo'
+  SC.run.sync()
+  equal Sensor.stop1.get('foo'), undefined, "stop1#foo should not have changed before the sync"
+  boundObject.set('foo', true)
+  SC.run.sync()
+  equal Sensor.stop1.get('foo'), true, "the binding should have changed stop1#foo"
+  # Create a new stop
+  messages = messageFactory [
+   {usn: Sensor.IGNITION_ON,  time: '02:10'},
+   {usn: Sensor.MOVING,       time: '02:11'},
+   {usn: Sensor.IGNITION_OFF, time: '02:12'}
+  ]
+  vehicle.updateWithMessages messages
+  SC.run.sync()
+  equal vehicle.getPath('stops.length'), 2
+  # Check that the binding is still in place
+  stop1 = vehicle.getPath('stops.firstObject')
+  equal stop1.get('foo'), true, "the value hasn't changed"
+  boundObject.set('foo', false)
+  SC.run.sync()
+  equal stop1.get('foo'), false, "the binding still works"
+
 test 'moved', ->
   vehicle =  Sensor.Vehicle.create()
   equal vehicle.get('moved'), false
