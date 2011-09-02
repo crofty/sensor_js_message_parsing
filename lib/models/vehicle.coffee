@@ -11,17 +11,12 @@ Sensor.Vehicle = SC.Object.extend
         journey = @createJourney(message)
       if message.get('usn') == Sensor.IGNITION_OFF
         journey = @getPath('journeys.lastObject')
-        if journey
-          journey.finish()
-          if journey.getPath('lastMessage.usn') == Sensor.IGNITION_ON
-            @get('journeys').removeObject(journey)
-            journey.destroy()
+        @finishJourney(journey) if journey
       if message.get('usn') == Sensor.MOVING
-        if journey = @getPath('journeys.lastObject')
-        else
-          if previousStagedMessage = @stagedMessage(message.get('datetime'))
-            journey = @createJourney(previousStagedMessage)
-            journey.addMessage(previousStagedMessage)
+        journey = @getPath('journeys.lastObject')
+        if !journey && (previousStagedMessage = @stagedMessage(message.get('datetime')))
+          journey = @createJourney(previousStagedMessage)
+          journey.addMessage(previousStagedMessage)
         @staged = message
       journey.addMessage(message) if journey
     ), this)
@@ -38,6 +33,8 @@ Sensor.Vehicle = SC.Object.extend
     journey = Sensor.Journey.create(vehicle: this)
     @get('journeys').pushObject(journey)
     journey
+  finishJourney: (journey) ->
+    journey.finish()
   state: SC.computed( ->
     console.log "calculating state"
     lastMessage = @getPath('messages.lastObject')
