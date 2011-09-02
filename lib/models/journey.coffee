@@ -1,6 +1,7 @@
 Sensor.Journey = SC.Object.extend
   init: ->
     @set('messages', SC.ArrayProxy.create(content: []))
+    @set('stop', Sensor.Stop.create(journey: this))
   addMessage: (message) ->
     @get('messages').pushObject(message)
   startMessageBinding: '.messages.firstObject'

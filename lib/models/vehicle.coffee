@@ -31,11 +31,13 @@ Sensor.Vehicle = SC.Object.extend
     # had an ignition off and hence become 'stopped' due to 
     # timing out.  If this has happened then we will be one stop
     # short and we need to create the last stop
-    _stops = @get('_stops')
-    if lastJourney = @getPath('_journeys.lastObject')
-      if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
-        @createStop(lastJourney.getPath('messages.lastObject'))
-    _stops
+    # _stops = @get('_stops')
+    # if lastJourney = @getPath('_journeys.lastObject')
+    #   if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
+    #     @createStop(lastJourney.getPath('messages.lastObject'))
+    # _stops
+    journeys = @getPath('journeys.content').slice(0)
+    journeys.filter((j) -> j.state() == 'finished').map (j) -> j.get('stop')
   ).property()
   journeys: ( ->
     _journeys = @get('_journeys')
