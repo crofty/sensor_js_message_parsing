@@ -19,8 +19,6 @@ Sensor.Stop = SC.Object.extend
     journeys = @getPath('journey.vehicle.journeys').slice(0)
     console.log "journeys", journeys
     _.detect journeys.reverse(), (j) ->
-      console.log j.get('id')
-      console.log journey.get('id')
       j.get('id') > journey.get('id')
   leaveTime: ( ->
     if nextJourney = @nextJourney()
