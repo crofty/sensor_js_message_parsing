@@ -42,12 +42,12 @@ test 'Multiple Journeys with stopped time', ->
     journey1 = vehicle.getPath('journeys.firstObject')
     equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
     equals journey1.get('endTime').toFormattedString('%H:%M'), '01:12'
-    equals journey1.get('state'), 'finished'
+    equals journey1.state(), 'finished'
     equals journey1.get('stoppedFor'), 480000
     journey2 = vehicle.getPath('journeys.lastObject')
     equals journey2.get('startTime').toFormattedString('%H:%M'), '01:20'
     equals journey2.get('endTime').toFormattedString('%H:%M'), '01:22'
-    equals journey1.get('state'), 'finished'
+    equals journey1.state(), 'finished'
     equals vehicle.get('state'), 'stopped'
 
 test 'Multiple Journeys when the first has no ignition off', ->
@@ -68,12 +68,12 @@ test 'Multiple Journeys when the first has no ignition off', ->
       journey1 = vehicle.getPath('journeys.firstObject')
       equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
       equals journey1.get('endTime').toFormattedString('%H:%M'), '01:13'
-      equals journey1.get('state'), 'finished'
+      equals journey1.state(), 'finished'
       equals journey1.get('stoppedFor'), 120000
       journey2 = vehicle.getPath('journeys.lastObject')
       equals journey2.get('startTime').toFormattedString('%H:%M'), '01:15'
       equals journey2.get('endTime').toFormattedString('%H:%M'), '01:17'
-      equals journey1.get('state'), 'finished'
+      equals journey1.state(), 'finished'
       equals vehicle.get('state'), 'stopped'
 
 test 'Journeys on different days', ->
@@ -89,15 +89,15 @@ test 'Journeys on different days', ->
       datetime: SC.DateTime.parse(message.time,'%Y-%m-%dT%H:%M')
   vehicle.updateWithMessages(messages)
   SC.run.sync()
-  atTime "2011-08-27T01:18:00Z", ->
+  atTime "2011-09-27T02:00:00Z", ->
     equal vehicle.getPath('journeys.length'), 2
     journey1 = vehicle.getPath('journeys.firstObject')
     equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
     equals journey1.get('endTime').toFormattedString('%H:%M'), '01:12'
-    equals journey1.get('state'), 'finished'
+    equals journey1.state(), 'finished'
     equals journey1.get('stoppedFor'), 2677740000 #TODO: check that this is correct, maybe it should be 85740000
     journey2 = vehicle.getPath('journeys.lastObject')
     equals journey2.get('startTime').toFormattedString('%H:%M'), '01:01'
     equals journey2.get('endTime').toFormattedString('%H:%M'), '01:03'
-    equals journey1.get('state'), 'finished'
+    equals journey2.state(), 'finished'
     equals vehicle.get('state'), 'stopped'

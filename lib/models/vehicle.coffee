@@ -18,7 +18,7 @@ Sensor.Vehicle = SC.Object.extend
           @finishJourney(journey)
       if message.get('usn') == Sensor.MOVING
         if journey = @getPath('journeys.lastObject')
-          if journey.get('state') == 'unfinished'
+          if journey.state(message.get('datetime')) == 'unfinished'
             journey.addMessage(message)
         else
           if previousStagedMessage = @stagedMessage(message.get('datetime'))
@@ -33,7 +33,7 @@ Sensor.Vehicle = SC.Object.extend
     # short and we need to create the last stop
     _stops = @get('_stops')
     if lastJourney = @getPath('journeys.lastObject')
-      if (lastJourney.get('state') == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
+      if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
         @createStop(lastJourney.getPath('messages.lastObject'))
     _stops
   ).property()

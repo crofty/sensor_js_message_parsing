@@ -2,13 +2,6 @@ module "Journey",
   setup: -> console.log "setup"
   teardown: -> console.log "teardown"
 
-test 'its lastMessage is the last object of the messages array', ->
-  journey = Sensor.Journey.create()
-  message = SC.Object.create()
-  journey.addMessage(message)
-  SC.run.sync()
-  equal journey.get('lastMessage'), message
-
 test "start address is given by the first message", ->
   journey = Sensor.Journey.create()
   journey.addMessage({address: 'London'})
@@ -38,5 +31,34 @@ test "end address is given by the last message", ->
   journey.addMessage({address: 'Manchester'})
   SC.run.sync()
   equal journey.get('endAddress'), 'Manchester'
+
+test "lastMessage", ->
+  atTime "2011-08-27T01:09:00Z", ->
+    journey = Sensor.Journey.create()
+    equals journey.lastMessage(), undefined
+    message = Sensor.Message.create
+      usn: Sensor.IGNITION_ON
+      datetime: SC.DateTime.parse("2011-01-01 01:10","%Y-%m-%d %H:%M")
+    journey.addMessage message
+    equals journey.lastMessage(), message
+    message2 = Sensor.Message.create
+      usn: Sensor.IGNITION_ON
+      datetime: SC.DateTime.parse("2011-01-01 01:13","%Y-%m-%d %H:%M")
+    journey.addMessage message2
+    equals journey.lastMessage(), message2
+    equals journey.lastMessage(SC.DateTime.parse("2011-01-01 01:12","%Y-%m-%d %H:%M")), message
+    equals journey.lastMessage(SC.DateTime.parse("2011-01-01 01:00","%Y-%m-%d %H:%M")), undefined
+
+test "state returns the correct values", ->
+  atTime "2011-08-27T01:09:00Z", ->
+    journey = Sensor.Journey.create()
+    equals journey.state(), 'unknown', 'unknown when no messages'
+    message = Sensor.Message.create
+      usn: Sensor.IGNITION_ON
+      datetime: SC.DateTime.parse("2011-01-01 01:10","%Y-%m-%d %H:%M")
+    journey.addMessage message
+    equals journey.state(SC.DateTime.parse("2011-01-01 01:11","%Y-%m-%d %H:%M")), 'unfinished'
+    equals journey.state(SC.DateTime.parse("2011-01-01 02:00","%Y-%m-%d %H:%M")), 'finished'
+
 
 

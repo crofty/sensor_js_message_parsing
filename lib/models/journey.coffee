@@ -3,12 +3,11 @@ Sensor.Journey = SC.Object.extend
     @set('messages', SC.ArrayProxy.create(content: []))
   addMessage: (message) ->
     @get('messages').pushObject(message)
-  lastMessageBinding: '.messages.lastObject'
   startMessageBinding: '.messages.firstObject'
-  startAddress: ( -> @getPath('startMessage.address')).property('startMessage').cacheable()
-  startTime: ( -> @getPath('startMessage.datetime')).property('startMessage').cacheable()
-  endTime: ( -> @getPath('lastMessage.datetime')).property('lastMessage').cacheable()
-  endAddress: ( -> @getPath('lastMessage.address')).property('lastMessage').cacheable()
+  startAddress: ( -> @getPath('messages.firstObject.address')).property()
+  startTime: ( -> @getPath('messages.firstObject.datetime')).property()
+  endTime: ( -> @getPath('messages.lastObject.datetime')).property()
+  endAddress: ( -> @getPath('messages.lastObject.address')).property()
   stoppedFor: ( ->
     rawJourneys = @getPath('vehicle.journeys.content')
     if nextJourney = _.detect rawJourneys, ((j) => j.get('startTime') > @get('startTime'))
@@ -20,17 +19,21 @@ Sensor.Journey = SC.Object.extend
   # ).property()
   finish: ->
     @set('forceFinished',true)
-  state: ( ->
-    lastMessage = @getPath('messages.lastObject')
-    time = SC.DateTime.create().get('milliseconds')
+  state: (datetime = SC.DateTime.create())->
+    lastMessage = @lastMessage(datetime)
+    time = datetime.get('milliseconds')
     return 'unknown' unless lastMessage
     return 'finished' if lastMessage.get('usn') == Sensor.IGNITION_OFF
     return 'finished' if (time > lastMessage.getPath('datetime.milliseconds') && @get('forceFinished') == true)
     if lastMessage.getPath('datetime.milliseconds') > (time - 1000*60*10)
       return 'unfinished'
     "finished"
-  ).property()
   moved: ( ->
     usns = @get('messages').map (m) -> m.get('usn')
     _.include usns, Sensor.MOVING
   ).property()
+  lastMessage: (datetime = SC.DateTime.create()) ->
+    time = datetime.get('milliseconds')
+    messages = @getPath('messages.content').slice(0).reverse()
+    _.detect messages, (m) ->
+      m.getPath('datetime.milliseconds') < time
