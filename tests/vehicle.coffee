@@ -40,6 +40,24 @@ test 'heading is set by the last message', ->
   SC.run.sync()
   equal vehicle.getPath('heading'), 90
 
+test 'state updates correctly', ->
+  vehicle = Sensor.Vehicle.create()
+  equals vehicle.get('state'), 'stopped'
+  messages = messageFactory [
+    usn: Sensor.IGNITION_ON
+    time: SC.DateTime.create()
+  ]
+  vehicle.updateWithMessages messages
+  SC.run.sync()
+  equals vehicle.get('state'), 'moving'
+  messages = messageFactory [
+    usn: Sensor.IGNITION_OFF
+    time: SC.DateTime.create()
+  ]
+  vehicle.updateWithMessages messages
+  SC.run.sync()
+  equals vehicle.get('state'), 'stopped'
+
 test 'journeys are not incorrectly cached', ->
   vehicle =  Sensor.Vehicle.create()
   equal vehicle.getPath('journeys.length'), 0, "zero journeys before any messages received"

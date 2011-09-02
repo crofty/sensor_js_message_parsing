@@ -9,7 +9,9 @@
 @messageFactory = (messages) ->
   messages = [messages] if !$.isArray(messages)
   messages.map (message) ->
+    if typeof(message.time) == 'string'
+      message.time = SC.DateTime.parse("2011-08-27T#{message.time}",'%Y-%m-%dT%H:%M')
     Sensor.Message.create
       usn: message.usn
-      datetime: SC.DateTime.parse("2011-08-27T#{message.time}",'%Y-%m-%dT%H:%M')
+      datetime: message.time
       address: message.address

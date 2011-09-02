@@ -2,10 +2,11 @@ Sensor.Vehicle = SC.Object.extend
   init: ->
     @set('journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
+    @_super()
   updateWithMessages: (messages) ->
     messages = [messages] if !$.isArray(messages)
-    messages.forEach (message) =>
-      @get('messages').pushObject(message)
+    @get('messages').pushObjects(messages)
+    messages.forEach( ((message) ->
       if message.get('usn') == Sensor.IGNITION_ON
         journey = @createJourney(message)
       if message.get('usn') == Sensor.IGNITION_OFF
@@ -23,6 +24,7 @@ Sensor.Vehicle = SC.Object.extend
             journey.addMessage(previousStagedMessage)
         @staged = message
       journey.addMessage(message) if journey
+    ), this)
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
@@ -36,7 +38,8 @@ Sensor.Vehicle = SC.Object.extend
     journey = Sensor.Journey.create(vehicle: this)
     @get('journeys').pushObject(journey)
     journey
-  state: ( ->
+  state: SC.computed( ->
+    console.log "calculating state"
     lastMessage = @getPath('messages.lastObject')
     return 'stopped' unless lastMessage
     return 'stopped' if lastMessage.get('usn') == Sensor.IGNITION_OFF
@@ -44,7 +47,7 @@ Sensor.Vehicle = SC.Object.extend
       'moving'
     else
       'stopped'
-  ).property()
+  ).property('messages.lastObject').cacheable() #'messages.lastObject').cacheable()
   stagedMessage: (datetime=SC.DateTime.create())->
     return @staged if @staged && @staged.getPath('datetime.milliseconds') > (datetime.get('milliseconds')- 1000*60*5)
   stops: ( ->
