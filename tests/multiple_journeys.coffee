@@ -51,29 +51,30 @@ test 'Multiple Journeys with stopped time', ->
     equals vehicle.get('state'), 'stopped'
 
 test 'Multiple Journeys when the first has no ignition off', ->
-  messages = messageFactory [
-    {usn: Sensor.IGNITION_ON,  time: '01:10'},
-    {usn: Sensor.MOVING,       time: '01:11'},
-    {usn: Sensor.MOVING,       time: '01:12'},
-    {usn: Sensor.MOVING,       time: '01:13'},
-    {usn: Sensor.IGNITION_ON,  time: '01:15'},
-    {usn: Sensor.MOVING,       time: '01:16'},
-    {usn: Sensor.IGNITION_OFF, time: '01:17'}
-  ]
-  vehicle.updateWithMessages(messages)
-  SC.run.sync()
-  atTime "2011-08-27T01:18:00Z", ->
-    equal vehicle.getPath('journeys.length'), 2
-    journey1 = vehicle.getPath('journeys.firstObject')
-    equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
-    equals journey1.get('endTime').toFormattedString('%H:%M'), '01:13'
-    equals journey1.get('state'), 'finished'
-    equals journey1.get('stoppedFor'), 120000
-    journey2 = vehicle.getPath('journeys.lastObject')
-    equals journey2.get('startTime').toFormattedString('%H:%M'), '01:15'
-    equals journey2.get('endTime').toFormattedString('%H:%M'), '01:17'
-    equals journey1.get('state'), 'finished'
-    equals vehicle.get('state'), 'stopped'
+  atTime "2011-08-27T01:09:00Z", ->
+    messages = messageFactory [
+      {usn: Sensor.IGNITION_ON,  time: '01:10'},
+      {usn: Sensor.MOVING,       time: '01:11'},
+      {usn: Sensor.MOVING,       time: '01:12'},
+      {usn: Sensor.MOVING,       time: '01:13'},
+      {usn: Sensor.IGNITION_ON,  time: '01:15'},
+      {usn: Sensor.MOVING,       time: '01:16'},
+      {usn: Sensor.IGNITION_OFF, time: '01:17'}
+    ]
+    vehicle.updateWithMessages(messages)
+    SC.run.sync()
+    atTime "2011-08-27T01:18:00Z", ->
+      equal vehicle.getPath('journeys.length'), 2
+      journey1 = vehicle.getPath('journeys.firstObject')
+      equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
+      equals journey1.get('endTime').toFormattedString('%H:%M'), '01:13'
+      equals journey1.get('state'), 'finished'
+      equals journey1.get('stoppedFor'), 120000
+      journey2 = vehicle.getPath('journeys.lastObject')
+      equals journey2.get('startTime').toFormattedString('%H:%M'), '01:15'
+      equals journey2.get('endTime').toFormattedString('%H:%M'), '01:17'
+      equals journey1.get('state'), 'finished'
+      equals vehicle.get('state'), 'stopped'
 
 test 'Journeys on different days', ->
   messages = [{usn: Sensor.IGNITION_ON,  time: '2011-08-27T01:10'},

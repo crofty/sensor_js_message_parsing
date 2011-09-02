@@ -21,31 +21,34 @@ test 'Ignition On', ->
     equals vehicle.get('state'), 'moving'
 
 test 'Ignition Off', ->
-  message = Sensor.Message.create
+  messages = messageFactory [
     usn: Sensor.IGNITION_OFF
     datetime: SC.DateTime.parse('2011-08-27T01:10:11Z','%Y-%m-%dT%H:%M')
     address: 'London'
-  vehicle.updateWithMessages message
-  SC.run.sync()
-  equals vehicle.getPath('journeys.length'), 0
-  equals vehicle.get('state'), 'stopped'
+  ]
+  vehicle.updateWithMessages messages
+  atTime "2011-08-27T02:11:00Z", ->
+    SC.run.sync()
+    equals vehicle.getPath('journeys.length'), 0
+    equals vehicle.get('state'), 'stopped'
 
 test 'Recent unfinished journey', ->
-  messages = messageFactory [
-   {usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
-   {usn: Sensor.MOVING,       time: '01:11', address: 'Manchester'}
-  ]
-  vehicle.updateWithMessages(messages)
-  SC.run.sync()
+  atTime "2011-08-27T01:09:00Z", ->
+    messages = messageFactory [
+     {usn: Sensor.IGNITION_ON,  time: '01:10', address: 'London'},
+     {usn: Sensor.MOVING,       time: '01:11', address: 'Manchester'}
+    ]
+    vehicle.updateWithMessages(messages)
+    SC.run.sync()
 
-  atTime "2011-08-27T01:12:00Z", ->
-    journey1 = vehicle.getPath('journeys.firstObject')
-    equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
-    equals journey1.get('startAddress'), 'London'
-    equals journey1.get('endTime').toFormattedString('%H:%M'), '01:11'
-    equals journey1.get('endAddress'), 'Manchester'
-    equals journey1.get('state'), 'unfinished'
-    equals vehicle.get('state'), 'moving'
+    atTime "2011-08-27T01:12:00Z", ->
+      journey1 = vehicle.getPath('journeys.firstObject')
+      equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
+      equals journey1.get('startAddress'), 'London'
+      equals journey1.get('endTime').toFormattedString('%H:%M'), '01:11'
+      equals journey1.get('endAddress'), 'Manchester'
+      equals journey1.get('state'), 'unfinished'
+      equals vehicle.get('state'), 'moving'
 
 test 'Finished journey', ->
   messages = messageFactory [
@@ -95,19 +98,20 @@ test 'Journey with no ignition on', ->
   equals vehicle.get('state'), 'stopped'
 
 test 'Journey with no ignition on or off', ->
-  messages = messageFactory [
-    {usn: Sensor.MOVING,  time: '01:10'},
-    {usn: Sensor.MOVING,       time: '01:11'},
-    {usn: Sensor.MOVING,       time: '01:12'}
-  ]
-  vehicle.updateWithMessages(messages)
-  SC.run.sync()
-  atTime '2011-08-27T09:00:00Z', ->
-    journey1 = vehicle.getPath('journeys.firstObject')
-    equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
-    equals journey1.get('endTime').toFormattedString('%H:%M'), '01:12'
-    equals journey1.get('state'), 'finished'
-    equals vehicle.get('state'), 'stopped'
+  atTime "2011-08-27T01:09:00Z", ->
+    messages = messageFactory [
+      {usn: Sensor.MOVING,  time: '01:10'},
+      {usn: Sensor.MOVING,       time: '01:11'},
+      {usn: Sensor.MOVING,       time: '01:12'}
+    ]
+    vehicle.updateWithMessages(messages)
+    SC.run.sync()
+    atTime '2011-08-27T09:00:00Z', ->
+      journey1 = vehicle.getPath('journeys.firstObject')
+      equals journey1.get('startTime').toFormattedString('%H:%M'), '01:10'
+      equals journey1.get('endTime').toFormattedString('%H:%M'), '01:12'
+      equals journey1.get('state'), 'finished'
+      equals vehicle.get('state'), 'stopped'
 
 # test 'An ignition on and off with no movement', ->
 #   messages = [{usn: Sensor.IGNITION_ON,  time: '01:10'},

@@ -21,7 +21,7 @@ Sensor.Journey = SC.Object.extend
   finish: ->
     @set('forceFinished',true)
   state: ( ->
-    lastMessage = @get('lastMessage')
+    lastMessage = @getPath('messages.lastObject')
     time = SC.DateTime.create().get('milliseconds')
     return 'unknown' unless lastMessage
     return 'finished' if lastMessage.get('usn') == Sensor.IGNITION_OFF

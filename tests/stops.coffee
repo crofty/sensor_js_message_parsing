@@ -66,3 +66,17 @@ test "one stop when the second journey is underway", ->
     equals stop1.get('address'), 'London'
     equals stop1.get('leaveTime').toFormattedString('%H:%M'), '01:22'
 
+test "one stop when there is a rogue moving message after first journey", ->
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.MOVING,       time: '01:11'},
+    {usn: Sensor.IGNITION_OFF, time: '01:12'}
+    {usn: Sensor.MOVING,       time: '01:13'},
+  ]
+  vehicle.updateWithMessages(messages)
+  SC.run.sync()
+  atTime '2011-08-27T01:24:00Z', ->
+    equals vehicle.getPath('stops.length'), 1, "correct number of stops"
+    equals vehicle.getPath('journeys.length'), 1, "correct number of journeys"
+    stop1 = vehicle.getPath('stops.firstObject')
+    equals stop1.get('arriveTime').toFormattedString('%H:%M'), '01:12'

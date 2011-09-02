@@ -10,16 +10,21 @@ Sensor.Vehicle = SC.Object.extend
     messages.forEach( ((message) ->
       if message.get('usn') == Sensor.IGNITION_ON
         journey = @createJourney(message)
+        journey.addMessage(message)
       if message.get('usn') == Sensor.IGNITION_OFF
         journey = @getPath('journeys.lastObject')
-        @finishJourney(journey,message) if journey
+        if journey
+          journey.addMessage(message)
+          @finishJourney(journey)
       if message.get('usn') == Sensor.MOVING
-        journey = @getPath('journeys.lastObject')
-        if !journey && (previousStagedMessage = @stagedMessage(message.get('datetime')))
-          journey = @createJourney(previousStagedMessage)
-          journey.addMessage(previousStagedMessage)
+        if journey = @getPath('journeys.lastObject')
+          if journey.get('state') == 'unfinished'
+            journey.addMessage(message)
+        else
+          if previousStagedMessage = @stagedMessage(message.get('datetime'))
+            journey = @createJourney(previousStagedMessage)
+            journey.addMessage(previousStagedMessage)
         @staged = message
-      journey.addMessage(message) if journey
     ), this)
   stops: ( ->
     # Need to account for the fact that a journey may not have
@@ -45,15 +50,17 @@ Sensor.Vehicle = SC.Object.extend
     if lastStop = @getPath('_stops.lastObject')
       lastStop.set('leaveMessage',message)
     journey = Sensor.Journey.create(vehicle: this)
+    journey.get('messages').pushObject(message)
     @get('journeys').pushObject(journey)
     journey
   createStop: (message) ->
+    console.log "createing stop", message.get('usn')
     stop = Sensor.Stop.create arriveMessage: message
     @get('_stops').pushObject stop
     stop
-  finishJourney: (journey,message) ->
+  finishJourney: (journey) ->
     journey.finish()
-    @createStop(message)
+    @createStop(journey.getPath('messages.lastObject'))
   state: SC.computed( ->
     console.log "calculating state"
     lastMessage = @getPath('messages.lastObject')
