@@ -30,7 +30,7 @@ test "one stop when the first journey is finished", ->
   atTime '2011-08-27T01:13:00Z', ->
     equals vehicle.getPath('stops.length'), 1
     stop1 = vehicle.getPath('stops.firstObject')
-    equals stop1.get('arriveTime').toFormattedString('%H:%M'), '01:12'
+    equals stop1.get('arriveTime').toFormattedString('%H:%M'), '01:12', "arriveTime is correct"
     equals stop1.get('address'), 'London'
     equals stop1.get('leaveTime'), undefined
 
