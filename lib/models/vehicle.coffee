@@ -29,7 +29,7 @@ Sensor.Vehicle = SC.Object.extend
     _stops = @get('_stops')
     if lastJourney = @getPath('journeys.lastObject')
       if (lastJourney.get('state') == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
-        _stops.pushObject @createStop(lastJourney.getPath('messages.lastObject'))
+        @createStop(lastJourney.getPath('messages.lastObject'))
     _stops
   ).property()
   lastMessageBinding: '.messages.lastObject'
@@ -49,10 +49,11 @@ Sensor.Vehicle = SC.Object.extend
     journey
   createStop: (message) ->
     stop = Sensor.Stop.create arriveMessage: message
+    @get('_stops').pushObject stop
     stop
   finishJourney: (journey,message) ->
     journey.finish()
-    @get('_stops').pushObject @createStop(message)
+    @createStop(message)
   state: SC.computed( ->
     console.log "calculating state"
     lastMessage = @getPath('messages.lastObject')
