@@ -12,6 +12,7 @@
     if typeof(message.time) == 'string'
       message.time = SC.DateTime.parse("2011-08-27T#{message.time}",'%Y-%m-%dT%H:%M')
     Sensor.Message.create
+      id: message.id
       usn: message.usn
       datetime: message.time
       address: message.address

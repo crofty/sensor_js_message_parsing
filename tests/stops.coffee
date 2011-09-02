@@ -36,9 +36,9 @@ test "one stop when the first journey is finished", ->
 
 test "one stop when the first journey is finished without an ignition off", ->
   messages = messageFactory [
-    {usn: Sensor.IGNITION_ON,  time: '01:10'},
-    {usn: Sensor.MOVING, time: '01:11'},
-    {usn: Sensor.MOVING, time: '01:12', address: 'London'}
+    {id: 1, usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {id: 2, usn: Sensor.MOVING, time: '01:11'},
+    {id: 3, usn: Sensor.MOVING, time: '01:12', address: 'London'}
   ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
@@ -51,11 +51,11 @@ test "one stop when the first journey is finished without an ignition off", ->
 
 test "one stop when the second journey is underway", ->
   messages = messageFactory [
-    {usn: Sensor.IGNITION_ON,  time: '01:10'},
-    {usn: Sensor.MOVING,       time: '01:11'},
-    {usn: Sensor.IGNITION_OFF, time: '01:12', address: 'London'}
-    {usn: Sensor.IGNITION_ON,  time: '01:22'},
-    {usn: Sensor.MOVING,       time: '01:23'},
+    {id: 1, usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {id: 2, usn: Sensor.MOVING,       time: '01:11'},
+    {id: 3, usn: Sensor.IGNITION_OFF, time: '01:12', address: 'London'}
+    {id: 4, usn: Sensor.IGNITION_ON,  time: '01:22'},
+    {id: 5, usn: Sensor.MOVING,       time: '01:23'},
   ]
   vehicle.updateWithMessages(messages)
   SC.run.sync()
