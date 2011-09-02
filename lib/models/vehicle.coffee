@@ -40,6 +40,7 @@ Sensor.Vehicle = SC.Object.extend
   journeys: ( ->
     _journeys = @get('_journeys')
     filteredJourneys = _journeys.filter (j) -> j.valid()
+    console.log "filtering journeys", filteredJourneys.length
     @setPath('_journeys.content', filteredJourneys)
     @get('_journeys')
   ).property()

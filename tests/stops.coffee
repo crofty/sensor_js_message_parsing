@@ -70,7 +70,7 @@ test "one stop when there is a rogue moving message after first journey", ->
   messages = messageFactory [
     {usn: Sensor.IGNITION_ON,  time: '01:10'},
     {usn: Sensor.MOVING,       time: '01:11'},
-    {usn: Sensor.IGNITION_OFF, time: '01:12'}
+    {usn: Sensor.IGNITION_OFF, time: '01:12'},
     {usn: Sensor.MOVING,       time: '01:13'},
   ]
   vehicle.updateWithMessages(messages)
@@ -80,3 +80,20 @@ test "one stop when there is a rogue moving message after first journey", ->
     equals vehicle.getPath('journeys.length'), 1, "correct number of journeys"
     stop1 = vehicle.getPath('stops.firstObject')
     equals stop1.get('arriveTime').toFormattedString('%H:%M'), '01:12'
+
+test "one stop when there are loads of rouge ignition messages after first journey", ->
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '07:58'},
+    {usn: Sensor.MOVING,       time: '07:59'},
+    {usn: Sensor.IGNITION_OFF, time: '08:00'},
+    {usn: Sensor.IGNITION_ON,  time: '09:11'},
+    {usn: Sensor.IGNITION_ON,  time: '10:04'},
+    {usn: Sensor.IGNITION_OFF,  time: '10:05'}
+  ]
+  vehicle.updateWithMessages(messages)
+  SC.run.sync()
+  atTime '2011-08-27T10:30:00Z', ->
+    equals vehicle.getPath('journeys.length'), 1, "correct number of journeys"
+    equals vehicle.getPath('stops.length'), 1, "correct number of stops"
+    stop1 = vehicle.getPath('stops.firstObject')
+    equals stop1.get('arriveTime').toFormattedString('%H:%M'), '08:00'

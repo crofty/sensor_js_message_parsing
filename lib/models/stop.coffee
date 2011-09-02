@@ -9,3 +9,6 @@ Sensor.Stop = SC.Object.extend
   leaveTime: ( ->
     @getPath('leaveMessage.datetime')
   ).property('leaveMessage').cacheable()
+  duration: ( ->
+    @getPath('leaveMessage.datetime.milliseconds') - @getPath('arriveMessage.datetime.milliseconds')
+  ).property()
