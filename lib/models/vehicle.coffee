@@ -36,16 +36,19 @@ Sensor.Vehicle = SC.Object.extend
     #   if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
     #     @createStop(lastJourney.getPath('messages.lastObject'))
     # _stops
+    console.log "calculating stops"
     journeys = @getPath('journeys.content').slice(0)
-    journeys.filter((j) -> j.state() == 'finished').map (j) -> j.get('stop')
-  ).property()
+    if journeys
+      journeys.filter((j) -> j.state() == 'finished').map (j) -> j.get('stop')
+  ).property('_journeys.length').cacheable()
   journeys: ( ->
+    console.log "calculating journeys"
     _journeys = @get('_journeys')
-    filteredJourneys = _journeys.filter (j) -> j.valid()
-    console.log "filtering journeys", filteredJourneys.length
-    @setPath('_journeys.content', filteredJourneys)
-    @get('_journeys')
-  ).property()
+    if _journeys
+      filteredJourneys = _journeys.filter (j) -> j.valid()
+      @setPath('_journeys.content', filteredJourneys)
+      @get('_journeys')
+  ).property('_journeys.length').cacheable()
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
