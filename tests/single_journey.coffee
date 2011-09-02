@@ -132,16 +132,15 @@ test 'Random moving GPS blips', ->
     SC.run.sync()
     equal vehicle.getPath('journeys.length'), 0
 
-# test 'Random ignition on GPS blips', ->
-#   console.log "update started"
-#   vehicle.updateWithMessages(
-#     usn: Sensor.IGNITION_ON
-#     datetime: '2011-08-27T01:10:00Z'
-#     address: 'London'
-#   )
-#   console.log "update finished"
-#   atTime '2011-08-27T09:00:00Z', ->
-#     console.log "sync started"
-#     SC.run.sync()
-#     console.log "sync finsihed"
-#     equal vehicle.getPath('journeys.length'), 0
+test 'Random ignition on GPS blips', ->
+  message = Sensor.Message.create
+    usn: Sensor.IGNITION_ON
+    datetime: SC.DateTime.parse('2011-08-27T01:10:00Z','%Y-%m-%dT%H:%M')
+    address: 'London'
+  vehicle.updateWithMessages message
+  console.log "update finished"
+  atTime '2011-08-27T09:00:00Z', ->
+    console.log "sync started"
+    SC.run.sync()
+    console.log "sync finsihed"
+    equal vehicle.getPath('journeys.length'), 0
