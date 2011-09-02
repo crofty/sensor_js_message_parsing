@@ -2,7 +2,6 @@ Sensor.Vehicle = SC.Object.extend
   init: ->
     @set('_journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
-    @set('_stops', SC.ArrayProxy.create(content: []))
     @_super()
   updateWithMessages: (messages) ->
     messages = [messages] if !$.isArray(messages)
