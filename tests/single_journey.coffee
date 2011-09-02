@@ -114,14 +114,15 @@ test 'Journey with no ignition on or off', ->
       equals journey1.state(), 'finished'
       equals vehicle.get('state'), 'stopped'
 
-# test 'An ignition on and off with no movement', ->
-#   messages = [{usn: Sensor.IGNITION_ON,  time: '01:10'},
-#    {usn: Sensor.IGNITION_OFF,       time: '01:11'}
-#   ].map (message) -> {usn: message.usn, datetime: "2011-08-27T#{message.time}:11Z"}
-#   vehicle.updateWithMessages(messages)
-#   atTime '2011-08-27T09:00:00Z', ->
-#     SC.run.sync()
-#     equal vehicle.getPath('journeys.length'), 0
+test 'An ignition on and off with no movement', ->
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '01:10'},
+    {usn: Sensor.IGNITION_OFF, time: '01:11'},
+  ]
+  vehicle.updateWithMessages(messages)
+  atTime '2011-08-27T09:00:00Z', ->
+    SC.run.sync()
+    equal vehicle.getPath('journeys.length'), 0
 
 test 'Random moving GPS blips', ->
   messages = messageFactory
