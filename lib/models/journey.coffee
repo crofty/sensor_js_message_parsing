@@ -32,6 +32,11 @@ Sensor.Journey = SC.Object.extend
     usns = @get('messages').map (m) -> m.get('usn')
     _.include usns, Sensor.MOVING
   ).property()
+  valid: ->
+    @get('moved') or @isRecent()
+  isRecent: ->
+    lastMessagetime = @getPath('messages.lastObject.datetime.milliseconds')
+    lastMessagetime > (SC.DateTime.create().get('milliseconds') - 1000*60*10)
   lastMessage: (datetime = SC.DateTime.create()) ->
     time = datetime.get('milliseconds')
     messages = @getPath('messages.content').slice(0).reverse()

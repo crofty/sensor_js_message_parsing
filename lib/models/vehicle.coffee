@@ -1,6 +1,6 @@
 Sensor.Vehicle = SC.Object.extend
   init: ->
-    @set('journeys', Sensor.Journeys.create(content: []))
+    @set('_journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
     @set('_stops', SC.ArrayProxy.create(content: []))
     @_super()
@@ -12,12 +12,12 @@ Sensor.Vehicle = SC.Object.extend
         journey = @createJourney(message)
         journey.addMessage(message)
       if message.get('usn') == Sensor.IGNITION_OFF
-        journey = @getPath('journeys.lastObject')
+        journey = @getPath('_journeys.lastObject')
         if journey
           journey.addMessage(message)
           @finishJourney(journey)
       if message.get('usn') == Sensor.MOVING
-        if journey = @getPath('journeys.lastObject')
+        if journey = @getPath('_journeys.lastObject')
           if journey.state(message.get('datetime')) == 'unfinished'
             journey.addMessage(message)
         else
@@ -32,26 +32,32 @@ Sensor.Vehicle = SC.Object.extend
     # timing out.  If this has happened then we will be one stop
     # short and we need to create the last stop
     _stops = @get('_stops')
-    if lastJourney = @getPath('journeys.lastObject')
+    if lastJourney = @getPath('_journeys.lastObject')
       if (lastJourney.state() == 'finished') && (lastJourney.getPath('endTime.milliseconds') != @getPath('_stops.lastObject.arriveTime.milliseconds'))
         @createStop(lastJourney.getPath('messages.lastObject'))
     _stops
+  ).property()
+  journeys: ( ->
+    _journeys = @get('_journeys')
+    filteredJourneys = _journeys.filter (j) -> j.valid()
+    @setPath('_journeys.content', filteredJourneys)
+    @get('_journeys')
   ).property()
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
   headingBinding: '.lastMessage.heading'
   moved: ( ->
-    !!@getPath('journeys.length')
-  ).property('journeys.length').cacheable()
+    !!@getPath('_journeys.length')
+  ).property('_journeys.length').cacheable()
   createJourney: (message) ->
-    if lastJourney = @getPath('journeys.lastObject')
+    if lastJourney = @getPath('_journeys.lastObject')
       lastJourney.finish()
     if lastStop = @getPath('_stops.lastObject')
       lastStop.set('leaveMessage',message)
     journey = Sensor.Journey.create(vehicle: this)
     journey.get('messages').pushObject(message)
-    @get('journeys').pushObject(journey)
+    @get('_journeys').pushObject(journey)
     journey
   createStop: (message) ->
     stop = Sensor.Stop.create arriveMessage: message
