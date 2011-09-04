@@ -24,4 +24,7 @@ Sensor.Stop = SC.Object.extend
     if nextJourney = @nextJourney()
       nextJourney.get('startTime')
   ).property()
-  duration: 1000
+  duration: ( ->
+    if nextJourney = @nextJourney()
+      nextJourney.getPath('startTime.milliseconds') - @getPath('journey.endTime.milliseconds')
+  ).property()
