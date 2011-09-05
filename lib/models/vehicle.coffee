@@ -66,6 +66,6 @@ Sensor.Vehicle = SC.Object.extend
       'moving'
     else
       'stopped'
-  ).property('messages.lastObject').cacheable() #'messages.lastObject').cacheable()
+  ).property('messages.lastObject').cacheable()
   stagedMessage: (datetime=SC.DateTime.create())->
     return @staged if @staged && @staged.getPath('datetime.milliseconds') > (datetime.get('milliseconds')- 1000*60*5)
