@@ -14,7 +14,7 @@ Sensor.Journey = SC.Object.extend
   endAddress: ( -> @getPath('messages.lastObject.address')).property()
   stoppedFor: ( ->
     rawJourneys = @getPath('vehicle.journeys.content')
-    if nextJourney = _.detect rawJourneys, ((j) => j.get('startTime') > @get('startTime'))
+    if nextJourney = rawJourneys.find ((j) => j.get('startTime') > @get('startTime'))
       nextStartTime = nextJourney.getPath('startTime.milliseconds')
       stoppedFor = nextStartTime - @getPath('endTime.milliseconds')
   ).property()
@@ -34,7 +34,7 @@ Sensor.Journey = SC.Object.extend
     "finished"
   moved: ( ->
     usns = @get('messages').map (m) -> m.get('usn')
-    _.include usns, Sensor.MOVING
+    usns.some (usn) -> usn == Sensor.MOVING
   ).property()
   valid: ->
     @get('moved') or @isRecent()
@@ -44,5 +44,4 @@ Sensor.Journey = SC.Object.extend
   lastMessage: (datetime = SC.DateTime.create()) ->
     time = datetime.get('milliseconds')
     messages = @getPath('messages.content').slice(0).reverse()
-    _.detect messages, (m) ->
-      m.getPath('datetime.milliseconds') < time
+    messages.find (m) -> m.getPath('datetime.milliseconds') < time
