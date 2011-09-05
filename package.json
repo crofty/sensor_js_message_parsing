@@ -2,9 +2,9 @@
   "name": "sensor-js-message-parsing",
   "bpm": "1.0.0",
   "dependencies": {
-    "sproutcore": "2.0.beta.3",
-    "sproutcore-datetime": "2.0.beta.3",
-    "spade": "~> 1.0"
+    "spade": "~> 1.0",
+    "sproutcore": ">= 0.pre",
+    "sproutcore-datetime": ">= 0.pre"
   },
   "dependencies:development": {
     "spade-qunit": "~> 1.0.0",
