@@ -6,7 +6,7 @@ Sensor.Journey = SC.Object.extend
     @get('messages').pushObject(message)
   startMessageBinding: '.messages.firstObject'
   id: ( ->
-    @getPath('messages.firstObject.id')
+    "journey-" + @getPath('messages.firstObject.id')
   ).property()
   startAddress: ( -> @getPath('messages.firstObject.address')).property()
   startTime: ( -> @getPath('messages.firstObject.datetime')).property()

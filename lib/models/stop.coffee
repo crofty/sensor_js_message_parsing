@@ -1,5 +1,9 @@
 Sensor.Stop = SC.Object.extend
   init: ->
+    @_super()
+  id: ( ->
+    'stop-' + @getPath('journey.id')
+  ).property()
   # arriveTime: ( ->
   #   @getPath('arriveMessage.datetime')
   # ).property('arriveMessage').cacheable()
@@ -17,8 +21,7 @@ Sensor.Stop = SC.Object.extend
   nextJourney: ->
     journey = @get('journey')
     journeys = @getPath('journey.vehicle.journeys').slice(0)
-    console.log "journeys", journeys
-    journeys.reverse().find (j) -> j.get('id') > journey.get('id')
+    journeys.find (j) -> j.get('id') > journey.get('id')
   leaveTime: ( ->
     if nextJourney = @nextJourney()
       nextJourney.get('startTime')
