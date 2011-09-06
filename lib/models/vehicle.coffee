@@ -69,3 +69,9 @@ Sensor.Vehicle = SC.Object.extend
   ).property('messages.lastObject').cacheable()
   stagedMessage: (datetime=SC.DateTime.create())->
     return @staged if @staged && @staged.getPath('datetime.milliseconds') > (datetime.get('milliseconds')- 1000*60*5)
+  startLocation: ( ->
+    SC.Object.create
+      id: 'startLocation-' + @get('id')
+      address: @getPath('journeys.firstObject.startAddress')
+      leaveTime: @getPath('journeys.firstObject.startTime')
+  ).property().cacheable()

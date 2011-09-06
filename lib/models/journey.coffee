@@ -11,6 +11,9 @@ Sensor.Journey = SC.Object.extend
   startAddress: ( -> @getPath('messages.firstObject.address')).property()
   startTime: ( -> @getPath('messages.firstObject.datetime')).property()
   endTime: ( -> @getPath('messages.lastObject.datetime')).property()
+  duration: ( ->
+    @getPath('endTime.milliseconds') - @getPath('startTime.milliseconds')
+  ).property()
   endAddress: ( -> @getPath('messages.lastObject.address')).property()
   stoppedFor: ( ->
     rawJourneys = @getPath('vehicle.journeys.content')
