@@ -44,7 +44,7 @@ Sensor.Vehicle = SC.Object.extend
   lonBinding: '.lastMessage.lon'
   headingBinding: '.lastMessage.heading'
   moved: ( ->
-    !!@getPath('_journeys.length')
+    !!@getPath('journeys.length')
   ).property('_journeys.length').cacheable()
   createJourney: (message) ->
     if lastJourney = @getPath('_journeys.lastObject')
