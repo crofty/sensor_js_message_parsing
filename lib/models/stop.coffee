@@ -18,6 +18,7 @@ Sensor.Stop = SC.Object.extend
   # ).property()
   arriveTime: ( -> @getPath('journey.messages.lastObject.datetime') ).property()
   address:    ( -> @getPath('journey.messages.lastObject.address') ).property()
+  addressMessage: ( -> @getPath('journey.messages.lastObject') ).property()
   lat:    ( -> @getPath('journey.messages.lastObject.lat') ).property()
   lon:    ( -> @getPath('journey.messages.lastObject.lon') ).property()
   nextJourney: ->

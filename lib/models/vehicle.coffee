@@ -73,5 +73,6 @@ Sensor.Vehicle = SC.Object.extend
     SC.Object.create
       id: 'startLocation-' + @get('id')
       address: @getPath('journeys.firstObject.startAddress')
+      addressMessage: @getPath('journeys.firstObject.messages.firstObject')
       leaveTime: @getPath('journeys.firstObject.startTime')
   ).property().cacheable()

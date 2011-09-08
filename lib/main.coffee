@@ -7,7 +7,9 @@ Sensor.MOVING = 333
 
 # Address Types
 Sensor.Address = {}
-Sensor.Address.NOMINATIM = 0
+Sensor.Address.NOMINATIM = -1
+Sensor.Address.POI = 0
+Sensor.Address.GOOGLE = 1
 
 require('sensor-js-message-parsing/controllers/journeys')
 require('sensor-js-message-parsing/controllers/vehicles_controller')
