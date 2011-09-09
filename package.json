@@ -4,6 +4,7 @@
   "dependencies": {
     "spade": "~> 1.0",
     "sproutcore": ">= 0.pre",
+    "sensor-geo": ">= 0",
     "sproutcore-datetime": ">= 0.pre"
   },
   "dependencies:development": {

@@ -136,6 +136,10 @@ test 'bindings to a stop are not lost when a new stop is created', ->
 test 'moved', ->
   vehicle =  Sensor.Vehicle.create()
   equal vehicle.get('moved'), false
-  vehicle.get('journeys').pushObject(Sensor.Journey.create())
+  messages = messageFactory [
+   {usn: Sensor.IGNITION_ON,  time: '02:10'},
+   {usn: Sensor.MOVING,       time: '02:11'},
+  ]
+  vehicle.updateWithMessages messages
   SC.run.sync()
   equal vehicle.get('moved'), true
