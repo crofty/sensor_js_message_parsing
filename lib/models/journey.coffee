@@ -35,6 +35,7 @@ Sensor.Journey = SC.Object.extend
     if lastMessage.getPath('datetime.milliseconds') > (time - 1000*60*10)
       return 'unfinished'
     "finished"
+  finished: ( -> @state() == 'finished').property()
   moved: ( ->
     usns = @get('messages').map (m) -> m.get('usn')
     usns.some (usn) -> usn == Sensor.MOVING
