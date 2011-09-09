@@ -60,5 +60,15 @@ test "state returns the correct values", ->
     equals journey.state(SC.DateTime.parse("2011-01-01 01:11","%Y-%m-%d %H:%M")), 'unfinished'
     equals journey.state(SC.DateTime.parse("2011-01-01 02:00","%Y-%m-%d %H:%M")), 'finished'
 
+test "#distance", ->
+    journey = Sensor.Journey.create()
+    equals journey.get('distance'), 0
+    journey.addMessage Sensor.Message.create(lat:0,lon:0)
+    journey.addMessage Sensor.Message.create(lat:1,lon:1)
+    journey.addMessage Sensor.Message.create(lat:2,lon:2)
+    equals journey.get('distance'), 6716
+
+
+
 
 

@@ -45,4 +45,15 @@ Sensor.Journey = SC.Object.extend
     time = datetime.get('milliseconds')
     messages = @getPath('messages.content').slice(0).reverse()
     messages.find (m) -> m.getPath('datetime.milliseconds') < time
+  distance: ( ->
+    return 0 unless @getPath('messages.length')
+    messages = @getPath('messages.content')
+    messages.reduce( ((sum,message,index) ->
+      if nextMessage = messages[index+1]
+        console.log nextMessage.l
+        sum += Sensor.Geo.distanceBetween(message,nextMessage)
+      sum
+    ),0)
+
+  ).property()
 

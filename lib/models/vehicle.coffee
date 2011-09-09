@@ -77,3 +77,8 @@ Sensor.Vehicle = SC.Object.extend
       addressMessage: @getPath('journeys.firstObject.messages.firstObject')
       leaveTime: @getPath('journeys.firstObject.startTime')
   ).property().cacheable()
+  distanceTravelled: ( ->
+    @get('journeys.content').reduce( ((sum,journey) ->
+      sum += journey.get('distance')
+    ),0)
+  ).property()
