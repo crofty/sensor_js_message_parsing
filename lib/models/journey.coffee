@@ -21,11 +21,7 @@ Sensor.Journey = SC.Object.extend
       nextStartTime = nextJourney.getPath('startTime.milliseconds')
       stoppedFor = nextStartTime - @getPath('endTime.milliseconds')
   ).property()
-  # duration: ( ->
-  #   @getPath('lastMessage.datetime') - @get('startTime')
-  # ).property()
-  finish: ->
-    @set('forceFinished',true)
+  finish: -> @set('forceFinished',true)
   state: (datetime = SC.DateTime.create())->
     lastMessage = @lastMessage(datetime)
     time = datetime.get('milliseconds')
@@ -49,3 +45,4 @@ Sensor.Journey = SC.Object.extend
     time = datetime.get('milliseconds')
     messages = @getPath('messages.content').slice(0).reverse()
     messages.find (m) -> m.getPath('datetime.milliseconds') < time
+
