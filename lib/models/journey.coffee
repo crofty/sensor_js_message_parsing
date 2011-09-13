@@ -50,10 +50,8 @@ Sensor.Journey = SC.Object.extend
     messages = @getPath('messages.content')
     messages.reduce( ((sum,message,index) ->
       if nextMessage = messages[index+1]
-        console.log nextMessage.l
         sum += Sensor.Geo.distanceBetween(message,nextMessage)
       sum
     ),0)
-
-  ).property()
+  ).property('messages.length').cacheable()
 

@@ -1,7 +1,7 @@
 require('sproutcore')
 require('sproutcore-datetime')
-require('sensor-geo')
 Sensor ?= SC.Application.create()
+require('sensor-geo')
 Sensor.IGNITION_ON = 64
 Sensor.IGNITION_OFF = 65
 Sensor.MOVING = 333

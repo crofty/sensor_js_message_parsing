@@ -42,6 +42,7 @@ Sensor.Vehicle = SC.Object.extend
   lastMessageBinding: '.messages.lastObject'
   latBinding: '.lastMessage.lat'
   lonBinding: '.lastMessage.lon'
+  speedBinding: '.lastMessage.speed'
   headingBinding: '.lastMessage.heading'
   moved: ( ->
     !!@getPath('journeys.length')
@@ -78,7 +79,12 @@ Sensor.Vehicle = SC.Object.extend
       leaveTime: @getPath('journeys.firstObject.startTime')
   ).property().cacheable()
   distanceTravelled: ( ->
-    @get('journeys.content').reduce( ((sum,journey) ->
+    @getPath('journeys.content').reduce( ((sum,journey) ->
       sum += journey.get('distance')
+    ),0)
+  ).property()
+  drivingTime: ( ->
+    @getPath('journeys.content').reduce( ((sum,journey) ->
+      sum += journey.get('duration')
     ),0)
   ).property()
