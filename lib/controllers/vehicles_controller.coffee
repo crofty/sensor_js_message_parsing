@@ -18,6 +18,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
   load: ->
     console.time "Downloading vehicles"
     $.getJSON @get('vehiclesUrl'), (data) =>
+      console.log data
       console.timeEnd "Downloading vehicles"
       console.log "#{data.units.length} vehicles downloaded"
       @loadVehicles(data.units)

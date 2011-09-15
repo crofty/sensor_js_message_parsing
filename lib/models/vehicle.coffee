@@ -39,9 +39,14 @@ Sensor.Vehicle = SC.Object.extend
       @setPath('_journeys.content', filteredJourneys)
       @get('_journeys')
   ).property('_journeys.length').cacheable()
+  a: 1
   lastMessageBinding: '.messages.lastObject'
-  latBinding: '.lastMessage.lat'
-  lonBinding: '.lastMessage.lon'
+  latBinding: SC.Binding.transform( (value,binding) ->
+    value || binding.getPath('last_message.lat')
+  ).from('.lastMessage.lat')
+  lonBinding: SC.Binding.transform( (value,binding) ->
+    value || binding.getPath('last_message.lon')
+  ).from('.lastMessage.lon')
   speedBinding: '.lastMessage.speed'
   headingBinding: '.lastMessage.heading'
   moved: ( ->

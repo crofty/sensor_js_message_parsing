@@ -19,14 +19,23 @@ test 'can be initialized with data', ->
     registration: 'P718 MLL'
   equal vehicle.get('registration'), 'P718 MLL'
 
-test 'longitude is set by the last message', ->
-  vehicle =  Sensor.Vehicle.create()
+test 'longitude can be set upon initialization', ->
+  vehicle = Sensor.Vehicle.create
+    last_message:
+      lon: -3
+  SC.run.sync()
+  equal vehicle.get('lon'), -3
+
+test 'longitude is set by the last received message', ->
+  vehicle = Sensor.Vehicle.create
+    last_message:
+      lon: -3
   message = Sensor.Message.create lon: 51
   vehicle.updateWithMessages message
   SC.run.sync()
   equal vehicle.get('lon'), 51
 
-test 'latitude is set by the last message', ->
+test 'latitude is set by the last received message', ->
   vehicle =  Sensor.Vehicle.create()
   message = Sensor.Message.create lat: -2
   vehicle.updateWithMessages message
