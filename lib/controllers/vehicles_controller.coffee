@@ -50,3 +50,14 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
     @set('loadedMessages', true)
     @subscribeToWebsockets()
   subscribeToWebsockets: ->
+    juggernaut = new Juggernaut
+      host: Sensor.WEBSOCKET_IP
+      port: Sensor.WEBSOCKET_PORT
+    juggernaut.on "connect", -> console.log("Connected", juggernaut.socket.getTransport().type)
+    juggernaut.on "disconnect", -> console.log("Disconnected")
+    juggernaut.on "reconnect",  -> console.log("Reconnecting")
+    juggernaut.subscribe Sensor.WEBSOCKET_CHANNEL, (data) =>
+      console.log "Websocket data received", data
+      message = Sensor.Message.create data
+      if vehicle = Sensor.vehiclesController.findById message.get('vehicleId')
+        vehicle.updateWithMessages message
