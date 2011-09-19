@@ -63,5 +63,5 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
     juggernaut.subscribe Sensor.WEBSOCKET_CHANNEL, (data) =>
       console.log "Websocket data received", data
       message = Sensor.Message.create data
-      if vehicle = Sensor.vehiclesController.findById message.get('unit_id')
+      if vehicle = Sensor.liveVehiclesController.findById message.get('unit_id')
         vehicle.updateWithMessages message
