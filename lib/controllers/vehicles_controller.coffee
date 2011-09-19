@@ -1,5 +1,6 @@
 Sensor.VehiclesController = SC.ArrayProxy.extend
   content: []
+  date: SC.DateTime.create()
   loaded: false
   vehiclesUrl: ( -> "#{Sensor.API_URL}/units?callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property()
   messagesUrl: ( -> "#{Sensor.API_URL}/messages?callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property()
