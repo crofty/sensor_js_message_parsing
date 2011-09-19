@@ -1,6 +1,9 @@
 Sensor.VehiclesController = SC.ArrayProxy.extend
   content: []
   date: SC.DateTime.create()
+  liveDataset: ( ->
+    @get('date').toFormattedString('%Y-%m-%d') == SC.DateTime.create().toFormattedString('%Y-%m-%d')
+  ).property('date').cacheable()
   urlStartParam: ( ->
     @get('date').toFormattedString('%Y-%m-%d')
   ).property('date').cacheable()
@@ -58,7 +61,8 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       vehicle.updateWithMessages(messageObjects)
     console.timeEnd "processing messages"
     @set('loadedMessages', true)
-    @subscribeToWebsockets()
+    if @get('liveDataset')
+      @subscribeToWebsockets()
   subscribeToWebsockets: ->
     juggernaut = new Juggernaut
       host: Sensor.WEBSOCKET_IP
