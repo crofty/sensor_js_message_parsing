@@ -6,6 +6,9 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
   findById: (id) -> @findProperty('id',id)
   findByImei: (imei) -> @findProperty('imei',imei)
   findByNickname: (nickname) -> @findProperty('nickname',nickname)
+  moved: ( ->
+    @filterProperty('moved')
+  ).property('@each.moved').cacheable()
   moving: ( ->
     console.log "calculating moving"
     @filterProperty('state','moving')
