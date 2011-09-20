@@ -1,7 +1,7 @@
 Sensor.VehiclesController = SC.ArrayProxy.extend
   init: ->
+    @set('content',[])
     @load()
-  content: []
   date: SC.DateTime.create()
   liveDataset: ( ->
     @get('date').toFormattedString('%Y-%m-%d') == SC.DateTime.create().toFormattedString('%Y-%m-%d')
@@ -35,11 +35,12 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       console.log "#{data.units.length} vehicles downloaded"
       @loadVehicles(data.units)
       @set('loadedVehicles',true)
-      @getMessages()
+      # @getMessages()
   loadVehicles: (vehicles) ->
     vehicles.forEach (vehicleData) =>
       vehicle = Sensor.Vehicle.create(vehicleData)
       @pushObject vehicle
+    console.log "content length: #{@getPath('content.length')}"
   getMessages: ->
     console.time "downloading messages"
     $.getJSON @get('messagesUrl'), (data) =>

@@ -19,3 +19,11 @@ test "#findByImei returns the vehicle", ->
 #   collection.pushObjects [movingVehicle, stoppedVehicle]
 #   #movingVehicle.set('state','moving')
 #   equals collection.get('moving'), [movingVehicle]
+
+test "adding to one vehicle controller does not affect another", ->
+  collection2 = Sensor.VehiclesController.create()
+  equals collection.get('length'), 0
+  equals collection2.get('length'), 0
+  collection2.pushObject {}
+  equals collection.get('length'), 0
+  equals collection2.get('length'), 1
