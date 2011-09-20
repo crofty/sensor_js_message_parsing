@@ -4,15 +4,12 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
   liveDataset: ( ->
     @get('date').toFormattedString('%Y-%m-%d') == SC.DateTime.create().toFormattedString('%Y-%m-%d')
   ).property('date').cacheable()
-  urlStartParam: ( ->
+  urlDateParam: ( ->
     @get('date').toFormattedString('%Y-%m-%d')
-  ).property('date').cacheable()
-  urlEndParam: ( ->
-    @get('date').advance(day:1).toFormattedString('%Y-%m-%d')
   ).property('date').cacheable()
   loaded: false
   vehiclesUrl: ( -> "#{Sensor.API_URL}/units?callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
-  messagesUrl: ( -> "#{Sensor.API_URL}/messages?start=#{@get('urlStartParam')}&end=#{@get('urlEndParam')}&callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
+  messagesUrl: ( -> "#{Sensor.API_URL}/messages?date=#{@get('urlDateParam')}&callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
   findById: (id) -> @findProperty('id',id)
   findByImei: (imei) -> @findProperty('imei',imei)
   findByNickname: (nickname) -> @findProperty('nickname',nickname)
