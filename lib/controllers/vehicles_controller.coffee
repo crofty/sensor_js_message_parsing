@@ -1,4 +1,6 @@
 Sensor.VehiclesController = SC.ArrayProxy.extend
+  init: ->
+    @load()
   content: []
   date: SC.DateTime.create()
   liveDataset: ( ->
