@@ -35,7 +35,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       console.log "#{data.units.length} vehicles downloaded"
       @loadVehicles(data.units)
       @set('loadedVehicles',true)
-      # @getMessages()
+      @getMessages()
   loadVehicles: (vehicles) ->
     vehicles.forEach (vehicleData) =>
       vehicle = Sensor.Vehicle.create(vehicleData)
