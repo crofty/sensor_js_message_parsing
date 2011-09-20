@@ -14,6 +14,7 @@ Sensor.Address.GOOGLE = 1
 
 require('sensor-js-message-parsing/controllers/journeys')
 require('sensor-js-message-parsing/controllers/vehicles_controller')
+require('sensor-js-message-parsing/controllers/dataset_controller')
 require('sensor-js-message-parsing/models/vehicle')
 require('sensor-js-message-parsing/models/journey')
 require('sensor-js-message-parsing/models/message')
