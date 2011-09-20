@@ -61,6 +61,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       vehicle.updateWithMessages(messageObjects)
     console.timeEnd "processing messages"
     @set('loadedMessages', true)
+    @set('loaded', true)
     if @get('liveDataset')
       @subscribeToWebsockets()
   subscribeToWebsockets: ->
