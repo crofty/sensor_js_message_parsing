@@ -2,6 +2,7 @@ Sensor.Vehicle = SC.Object.extend
   init: ->
     @set('_journeys', Sensor.Journeys.create(content: []))
     @set('messages', SC.ArrayProxy.create(content: []))
+    @set('notifications', SC.ArrayProxy.create(content: []))
     @_super()
   updateWithMessages: (messages) ->
     messages = [messages] if !$.isArray(messages)
@@ -26,6 +27,8 @@ Sensor.Vehicle = SC.Object.extend
             journey.addMessage(previousStagedMessage)
         @staged = message
     ), this)
+  updateWithNotifications: (notifications) ->
+    @setPath('notifications.content', notifications)
   stops: ( ->
     console.log "calculating stops"
     journeys = @getPath('journeys.content').slice(0)

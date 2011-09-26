@@ -72,6 +72,19 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
     if @get('liveDataset')
       @subscribeToWebsockets()
   processNotifications: (notifications) ->
+    console.time "processing notifications"
+    console.log notifications
+    @get('content').forEach (vehicle) ->
+      # TODO: this can probably be optimised by removing the notifications from the data array
+      # so that after the messages have been added to a vehicle, we don't need to cycle
+      # through those messages again on the next iteration
+      vehicleId = vehicle.get('id')
+      notificationsForVehicle = notifications.filter (n) -> n.message.unit_id == vehicleId
+      notificationObjects = notificationsForVehicle.map (n) ->
+        Sensor.Message.create(n)
+      vehicle.updateWithNotifications(notificationObjects)
+    console.timeEnd "processing notifications"
+    @set('loadedNotifications', true)
   subscribeToWebsockets: ->
     juggernaut = new Juggernaut
       host: Sensor.WEBSOCKET_IP
