@@ -15,10 +15,11 @@ Sensor.Vehicle = SC.Object.extend
         if journey
           journey.addMessage(message)
           @finishJourney(journey)
+        @staged = null
       if message.get('usn') == Sensor.MOVING
-        if journey = @getPath('_journeys.lastObject')
-          if journey.state(message.get('datetime')) == 'unfinished'
-            journey.addMessage(message)
+        journey = @getPath('_journeys.lastObject')
+        if journey && journey.state(message.get('datetime')) == 'unfinished'
+          journey.addMessage(message)
         else
           if previousStagedMessage = @stagedMessage(message.get('datetime'))
             journey = @createJourney(previousStagedMessage)

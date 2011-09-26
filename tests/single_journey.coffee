@@ -98,6 +98,24 @@ test 'Journey with no ignition on', ->
     equals journey1.state(), 'finished'
     equals vehicle.get('state'), 'stopped'
 
+test 'Journey with ignition on, a gap, and then some moving messages', ->
+  messages = messageFactory [
+    {usn: Sensor.IGNITION_ON,  time: '07:31'},
+    {usn: Sensor.MOVING,       time: '08:04'},
+    {usn: Sensor.MOVING,       time: '08:05'},
+    {usn: Sensor.MOVING,       time: '08:06'},
+    {usn: Sensor.MOVING,       time: '08:07'},
+    {usn: Sensor.IGNITION_OFF, time: '08:08'}
+  ]
+  vehicle.updateWithMessages(messages)
+  atTime "2011-08-27T09:00:00Z", ->
+    SC.run.sync()
+    journey1 = vehicle.getPath('journeys.firstObject')
+    equals journey1.get('startTime').toFormattedString('%H:%M'), '08:04'
+    equals journey1.get('endTime').toFormattedString('%H:%M'), '08:08'
+    equals journey1.state(), 'finished'
+    equals vehicle.get('state'), 'stopped'
+
 test 'Journey with no ignition on or off', ->
   atTime "2011-08-27T01:09:00Z", ->
     messages = messageFactory [

@@ -81,7 +81,7 @@ test "one stop when there is a rogue moving message after first journey", ->
     stop1 = vehicle.getPath('stops.firstObject')
     equals stop1.get('arriveTime').toFormattedString('%H:%M'), '01:12'
 
-test "one stop when there are loads of rouge ignition messages after first journey", ->
+test "one stop when there are loads of rogue ignition messages after first journey", ->
   messages = messageFactory [
     {usn: Sensor.IGNITION_ON,  time: '07:58'},
     {usn: Sensor.MOVING,       time: '07:59'},
