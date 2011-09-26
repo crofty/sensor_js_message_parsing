@@ -11,6 +11,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
   loaded: false
   vehiclesUrl: ( -> "#{Sensor.API_URL}/units?callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
   messagesUrl: ( -> "#{Sensor.API_URL}/messages?date=#{@get('urlDateParam')}&callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
+  notificationsUrl: ( -> "#{Sensor.API_URL}/notifications?date=#{@get('urlDateParam')}&callback=?&oauth_token=#{Sensor.ACCESS_TOKEN}").property('date')
   findById: (id) -> @findProperty('id',id)
   findByImei: (imei) -> @findProperty('imei',imei)
   findByNickname: (nickname) -> @findProperty('nickname',nickname)
@@ -35,6 +36,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       @loadVehicles(data.units)
       @set('loadedVehicles',true)
       @getMessages()
+      @getNotifications()
   loadVehicles: (vehicles) ->
     vehicles.forEach (vehicleData) =>
       vehicle = Sensor.Vehicle.create(vehicleData)
@@ -46,6 +48,13 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
       messages = data.messages
       console.log "#{messages.length} messages downloaded"
       @processMessages(messages)
+  getNotifications: ->
+    console.time "downloading notifications"
+    $.getJSON @get('notificationsUrl'), (data) =>
+      console.timeEnd "downloading notifications"
+      notifications = data.notifications
+      console.log "#{notifications.length} notifications downloaded"
+      @processNotifications(notifications)
   processMessages: (messages) ->
     console.time "processing messages"
     @get('content').forEach (vehicle) ->
@@ -62,6 +71,7 @@ Sensor.VehiclesController = SC.ArrayProxy.extend
     @set('loaded', true)
     if @get('liveDataset')
       @subscribeToWebsockets()
+  processNotifications: (notifications) ->
   subscribeToWebsockets: ->
     juggernaut = new Juggernaut
       host: Sensor.WEBSOCKET_IP
