@@ -37,6 +37,7 @@ Sensor.Journey = SC.Object.extend
     usns.some (usn) -> usn == Sensor.MOVING
   ).property()
   valid: ->
+    return false if (0 == @get('duration') and !@isRecent())
     @get('moved') or @isRecent()
   isRecent: ->
     lastMessagetime = @getPath('messages.lastObject.datetime.milliseconds')
