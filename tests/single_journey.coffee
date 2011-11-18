@@ -116,9 +116,11 @@ test 'Journey with ignition on, a gap, and then some moving messages', ->
     equals journey1.state(), 'finished'
     equals vehicle.get('state'), 'stopped'
 
-test 'Journey with ignition on, a gap, and then some moving messages', ->
+test 'Journey with ignition on, zero length journey, and then some moving messages', ->
   messages = messageFactory [
     {usn: Sensor.IGNITION_ON,  time: '04:04'},
+    {usn: Sensor.MOVING,       time: '04:28'},
+    {usn: Sensor.MOVING,       time: '04:29'},
     {usn: Sensor.MOVING,       time: '04:41'},
     {usn: Sensor.MOVING,       time: '04:42'},
     {usn: Sensor.IGNITION_OFF, time: '04:43'}
