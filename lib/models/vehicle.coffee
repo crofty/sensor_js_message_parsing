@@ -24,7 +24,8 @@ Sensor.Vehicle = SC.Object.extend
         else
           if previousStagedMessage = @stagedMessage(message.get('datetime'))
             journey = @createJourney(previousStagedMessage)
-            journey.addMessage(previousStagedMessage)
+            # journey.addMessage(previousStagedMessage)
+            journey.addMessage(message)
         @staged = message
     ), this)
   updateWithNotifications: (notifications) ->
